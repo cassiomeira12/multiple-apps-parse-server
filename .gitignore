@@ -59,17 +59,15 @@ typings/
 # dotenv environment variables file
 .env
 
-
-/config.js
-/instance.json
 package-lock.json
 public/javascripts/
-/count.json
 /route-proxy.json
 /config.json
-/configs/
+/configs/*.json
 /appServers.json
 /dashboards.json
 /logs/
 /cloudcode/
 /multiple-apps-parse-server.iml
+dashboard.json
+servers.json
