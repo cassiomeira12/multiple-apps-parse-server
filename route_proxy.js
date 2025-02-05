@@ -17,6 +17,6 @@ const httpServer = http.createServer(function(req, res) {
     res.end('404 not found');
 });
 
-httpServer.listen(80, function () {
+httpServer.listen(8080, function () {
     console.log("Route Proxy is running");
 });
