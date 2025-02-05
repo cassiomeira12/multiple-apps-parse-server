@@ -1,0 +1,28 @@
+{
+  "port": 3001,
+  "apps": [
+    {
+      "production": true,
+      "appName": "Test",
+      "appId": "1",
+      "masterKey": "123",
+      "serverURL": "http://localhost/test/parse",
+      "graphQLServerURL": "http://localhost/test/graphql",
+      "enableSecurityChecks": false
+    }
+  ],
+  "users": [
+    {
+      "user": "test",
+      "pass": "$2a$10$aVc9RYTqOay1fh0lWEbrq.wOXjI8L5FJ9nfAWGYpxCawIYUQvmudW",
+      "apps": [
+        {
+          "appId": "C4AD32692CA8652F1D81EBD7A5326"
+        }
+      ]
+    }
+  ],
+  "useEncryptedPasswords": true,
+  "trustProxy": 1,
+  "allowInsecureHTTP": true
+}
