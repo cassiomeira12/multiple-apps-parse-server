@@ -4,7 +4,7 @@ const ParseDashboard = require('parse-dashboard');
 
 var config = require('./dashboard.json');
 
-var dashboard = new ParseDashboard(config, config.allowInsecureHTTP);
+var dashboard = new ParseDashboard(config, { allowInsecureHTTP: config.allowInsecureHTTP });
 
 var app = express();
 
