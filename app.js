@@ -1,41 +1,45 @@
-var express = require('express');
+const express = require('express');
+const { default: ParseServer, ParseGraphQLServer } = require('parse-server');
+const http = require('http');
 
-// config
-var config = {};
-if(process.env.app) {
-    config = require('./configs/'+process.env.app);
+const config = process.env.app ? require("./configs/" + process.env.app) : require("./configs/example.json");
+
+const serverURL = config.serverURL + ":" + config.port;
+
+var configParse = {
+  ...config,
+  cloud: config.cloud + '/main.js',
+  serverURL: serverURL + config.parseMount,
+  publicServerURL: serverURL + config.parseMount,
+  graphQLServerURL: serverURL + "/graphql",
 }
-if(!config.enable) {
-    console.log(config.app+" is disabled!");
-    return false;
+
+const parseServer = new ParseServer(configParse);
+
+const parseGraphQLServer = new ParseGraphQLServer(
+  parseServer, { graphQLPath: '/graphql' }
+);
+
+var mountPath = config.parseMount;
+
+var app;
+try {
+    app = require(config.cloud + '/app.js');
+    app.use(mountPath, parseServer.app);
+} catch (_) {
+    app = express();
+    app.use(mountPath, parseServer.app);
 }
-var globalConfig = require('./config.json');
 
-// parse server s3 adapter
-var S3Adapter = require('parse-server-s3-adapter');
+parseGraphQLServer.applyGraphQL(app);
 
-// parse server
-var ParseServer = require('parse-server').ParseServer;
-var appParseServer = express();
+const httpServer = http.createServer(app);
 
-var api = new ParseServer({
-    appName:config.app,
-    databaseURI: config.parseServer.databaseURI, // Connection string for your MongoDB database
-    collectionPrefix:config.useCollectionPrefix?config.parseServer.appId:undefined,
-    cloud: config.parseServer.cloud, // Absolute path to your Cloud Code
-    appId: config.parseServer.appId,
-    masterKey: config.parseServer.masterKey, // Keep this key secret!
-    serverURL: config.serverURL+":"+config.parseServer.port+"/", // Don't forget to change to https if needed
-    publicServerURL: config.publicServerURL+"/",
-    logsFolder:'./logs/'+config.app+"/",
-    filesAdapter: (process.env.AWS_ACCESS_KEY_ID ? new S3Adapter(globalConfig.S3FilesAdapter.bucket) : null)
+httpServer.listen(config.port, function () {
+  console.log(`Parse App ${config.appName}`);
+  console.log(`Parse running on ${serverURL}`);
+  console.log(`REST API running on ${serverURL + config.parseMount}`);
+  console.log(`GraphQL API running on ${serverURL + "/graphql"}`);
 });
 
-
-appParseServer.use('/', api);
-
-appParseServer.listen(config.parseServer.port, function() {
-    console.log('parse-server running on port '+config.parseServer.port);
-});
-
-module.exports = appParseServer;
+ParseServer.createLiveQueryServer(httpServer);
