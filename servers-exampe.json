@@ -1,0 +1,26 @@
+{
+  "apps": [
+    {
+      "name": "route",
+      "script": "./route_proxy.js",
+      "watch": false
+    },
+    {
+      "name": "dashboard",
+      "script": "./dashboard.js",
+      "watch": false
+    },
+    {
+      "name": "teste",
+      "script": "./app.js",
+      "watch": [
+        "../cloud"
+      ],
+      "env": {
+        "app": "teste",
+        "AWS_ACCESS_KEY_ID": "xxx",
+        "AWS_SECRET_ACCESS_KEY": "xxxx"
+      }
+    }
+  ]
+}
