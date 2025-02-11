@@ -16,4 +16,6 @@ app.get('/', (req, res) => {
 
 const httpServer = http.createServer(app);
 
-httpServer.listen(config.port);
+httpServer.listen(config.port, function () {
+    console.log(`Parse Dashboard running on http://localhost:${config.port}/dashboard`);
+});
