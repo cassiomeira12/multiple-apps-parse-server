@@ -83,13 +83,15 @@ const projectPath = config.projectPath || __dirname;
 app.use(express.static(resolve(projectPath + '/public')));
 app.use('/public', express.static(resolve(projectPath + '/public')));
 
-if (config.webApp !== "/") {
+const webAppPath = config.webApp || "/";
+
+if (webAppPath !== "/") {
   app.get("/", (_, res) => {
-    res.redirect(config.webApp);
+    res.redirect(webAppPath);
   });
 }
 
-app.get(config.webApp, (_, res) => {
+app.get(webAppPath, (_, res) => {
   res.sendFile(resolve(projectPath + '/public/test.html'));
 });
 
@@ -131,7 +133,7 @@ const httpServer = http.createServer(app);
 httpServer.listen(config.port, function () {
   console.log(`Parse App ${config.appName}`);
   console.log(`Parse running on ${serverURL}`);
-  console.log('Parse Web App ' + serverURL + config.webApp);
+  console.log('Parse Web App ' + serverURL + webAppPath);
   console.log(`REST API running on ${serverURL + parseMount}`);
   console.log(`GraphQL API running on ${serverURL + "/graphql"}`);
   console.log(`Allowed Origins ${allowedOrigins}`);
