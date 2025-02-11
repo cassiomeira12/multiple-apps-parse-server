@@ -3,17 +3,12 @@
   "appId": "1",
   "masterKey": "123",
   "restAPIKey": "123",
-  "clientKey": "123",
-  "databaseURI": "",
-  "cloud": "../cloud",
-  "verbose": true,
+  "databaseURI": "mongodb://localhost:27017/database",
+  "projectPath": "./",
   "serverURL": "http://localhost",
-  "port": 1333,
+  "port": 1331,
   "parseMount": "/parse",
-  "allowClientClassCreation": false,
-  "allowExpiredAuthDataToken": false,
-  "verifyUserEmails": false,
-  "enableAnonymousUsers": false,
-  "directAccess": true,
-  "enforcePrivateUsers": true
+  "webApp": "/",
+  "allowed_origins_cors": [],
+  "liveQueryClasses": []
 }
