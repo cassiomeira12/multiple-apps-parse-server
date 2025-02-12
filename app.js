@@ -17,7 +17,6 @@ var configParse = {
   masterKey: config.masterKey,
   restAPIKey: config.restAPIKey,
   clientKey: config.clientKey,
-  masterKeyIps: config.masterKeyIps,
   databaseURI: config.databaseURI,
   cloud: config.projectPath + '/cloud/main.js',
   serverURL: serverURL + config.parseMount,
