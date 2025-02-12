@@ -3,6 +3,8 @@
   "appId": "1",
   "masterKey": "123",
   "restAPIKey": "123",
+  "clientKey": "123",
+  "masterKeyIps": [],
   "databaseURI": "mongodb://localhost:27017/database",
   "projectPath": "./",
   "serverURL": "http://localhost",
