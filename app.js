@@ -16,6 +16,8 @@ var configParse = {
   appId: config.appId,
   masterKey: config.masterKey,
   restAPIKey: config.restAPIKey,
+  clientKey: config.clientKey,
+  masterKeyIps: config.masterKeyIps,
   databaseURI: config.databaseURI,
   cloud: config.projectPath + '/cloud/main.js',
   serverURL: serverURL + config.parseMount,
@@ -119,6 +121,19 @@ if (allowedOrigins.length > 0) {
 } else {
   app.options('*', cors());
 }
+
+app.all('*', (req, res, next) => {
+  const origin = req.get('origin');
+  const url = req.originalUrl
+  if (origin === undefined && url != "/parse/health") {
+    if (req.header("X-Parse-Client-Key") !== config.clientKey) {
+      return res.status(403).send({
+        "error": "unauthorized"
+      });
+    }
+  }
+  next();
+});
 
 app.use(parseMount, parseServer.app);
 
