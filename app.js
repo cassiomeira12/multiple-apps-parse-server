@@ -1,11 +1,12 @@
 const express = require('express');
 const { default: ParseServer, ParseGraphQLServer } = require('parse-server');
 const http = require('http');
+const https = require('https');
 const { path, resolve } = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const config = process.env.app ? require("./configs/" + process.env.app) : require("./configs/example.json");
+const config = process.env.app ? require("./configs/" + process.env.app) : require("./configs/sos-stg.json");
 
 const parseMount = config.parseMount;
 const serverURL = config.serverURL + ":" + config.port;
@@ -20,7 +21,7 @@ var configParse = {
   databaseURI: config.databaseURI,
   cloud: config.projectPath + '/cloud/main.js',
   serverURL: serverURL + config.parseMount,
-  publicServerURL: serverURL + config.parseMount,
+  publicServerURL: config.publicServerURL,
   graphQLServerURL: graphQLServerURL,
   "verbose": false,
   "directAccess": true,
@@ -59,8 +60,8 @@ var configParse = {
     "enableForAuthenticatedUser": true,
   },
   "security": {
-    "enableCheck": true,
-    "enableCheckLog": true,
+    "enableCheck": false,
+    "enableCheckLog": false,
     "checkGroups": [],
   },
   "serverStartComplete": () => {
@@ -73,9 +74,11 @@ const parseServer = new ParseServer(configParse);
 var app;
 try {
     app = require(config.cloud + '/app.js');
+    app.enable('trust proxy');
     app.set('trust proxy', true);
 } catch (_) {
     app = express();
+    app.enable('trust proxy');
     app.set('trust proxy', true);
 }
 
@@ -134,6 +137,18 @@ app.all('*', (req, res, next) => {
   next();
 });
 
+// Certificates and credentials for HTTPS server
+// var fs = require('fs')
+// var privateKey  = fs.readFileSync("../certificate/key.pem", "utf8")
+// var certificate = fs.readFileSync("../certificate/cert.pem", "utf8")
+// var ca = fs.readFileSync("../certificate/cert.pem", "utf8")
+
+// const credentials = {
+//   key: privateKey,
+//   cert: certificate,
+//   ca: ca
+// }
+
 app.use(parseMount, parseServer.app);
 
 const parseGraphQLServer = new ParseGraphQLServer(
@@ -142,17 +157,16 @@ const parseGraphQLServer = new ParseGraphQLServer(
 
 parseGraphQLServer.applyGraphQL(app);
 
-const httpServer = http.createServer(app);
+const server = http.createServer(app); // https.createServer(credentials, app);
 
-httpServer.listen(config.port, function () {
+server.listen(config.port, function () {
   console.log(`Parse App ${config.appName}`);
   console.log(`Parse running on ${serverURL}`);
   console.log('Parse Web App ' + serverURL + webAppPath);
+  console.log('Parse Public URL ' + config.publicServerURL);
   console.log(`REST API running on ${serverURL + parseMount}`);
   console.log(`GraphQL API running on ${serverURL + "/graphql"}`);
-  console.log(`Allowed Origins ${allowedOrigins}`);
+  console.log(`Allowed Origins [${allowedOrigins}]`);
 });
 
-ParseServer.createLiveQueryServer(httpServer);
-
-module.exports = { httpServer, configParse };
+ParseServer.createLiveQueryServer(server);
