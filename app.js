@@ -106,7 +106,7 @@ app.get(webAppPath, (_, res) => {
   res.sendFile(resolve(projectPath + webFolder + '/index.html'));
 });
 
-var allowedOrigins = config.allowed_origins_cors;
+var allowedOrigins = config.allowed_origins_cors || [];
 
 if (allowedOrigins.length > 0) {
   app.use(helmet.hidePoweredBy());
@@ -133,11 +133,11 @@ if (allowedOrigins.length > 0) {
 
 app.all('*', (req, res, next) => {
   const origin = req.get('origin');
-  const url = req.originalUrl
-  if (origin === undefined && url != "/parse/health") {
-    if (req.header("X-Parse-Client-Key") !== config.clientKey) {
+  const url = req.originalUrl;
+  if (origin === undefined && url !== '/parse/health') {
+    if (req.header('X-Parse-Client-Key') !== config.clientKey) {
       return res.status(403).send({
-        "error": "unauthorized"
+        'error': 'unauthorized',
       });
     }
   }
