@@ -83,9 +83,16 @@ try {
 }
 
 const projectPath = config.projectPath || __dirname;
+const webFolder = process.env.webAppFolder || '/public';
 
-app.use(express.static(resolve(projectPath + '/public')));
 app.use('/public', express.static(resolve(projectPath + '/public')));
+
+if (webFolder === '/public') {
+  app.use(express.static(resolve(projectPath + '/public')));
+} else {
+  app.use(express.static(resolve(projectPath + webFolder)));
+  app.use(webFolder, express.static(resolve(projectPath + webFolder)));
+}
 
 const webAppPath = config.webApp || '/';
 
@@ -96,7 +103,7 @@ if (webAppPath !== '/') {
 }
 
 app.get(webAppPath, (_, res) => {
-  res.sendFile(resolve(projectPath + '/public/index.html'));
+  res.sendFile(resolve(projectPath + webFolder + '/index.html'));
 });
 
 var allowedOrigins = config.allowed_origins_cors;

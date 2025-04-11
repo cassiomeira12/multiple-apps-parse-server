@@ -11,6 +11,7 @@
   "port": 1337,
   "parseMount": "/parse",
   "webApp": "/",
+  "webAppFolder": "/public",
   "allowed_origins_cors": [],
   "liveQueryClasses": []
 }
