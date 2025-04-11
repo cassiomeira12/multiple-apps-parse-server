@@ -134,11 +134,13 @@ if (allowedOrigins.length > 0) {
 app.all('*', (req, res, next) => {
   const origin = req.get('origin');
   const url = req.originalUrl;
-  if (origin === undefined && url !== '/parse/health') {
-    if (req.header('X-Parse-Client-Key') !== config.clientKey) {
-      return res.status(403).send({
-        'error': 'unauthorized',
-      });
+  if (origin === undefined) {
+    if (url !== '/parse/health') {
+      if (req.header('X-Parse-Client-Key') !== config.clientKey) {
+        return res.status(403).send({
+          'error': 'unauthorized',
+        });
+      }
     }
   }
   next();
