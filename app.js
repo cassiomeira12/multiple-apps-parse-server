@@ -134,7 +134,8 @@ if (allowedOrigins.length > 0) {
 app.all('*', (req, res, next) => {
   const origin = req.get('origin');
   const url = req.originalUrl;
-  if (origin === undefined && url !== '/parse/health') {
+  if (origin !== undefined) return;
+  if (url !== '/parse/health' || url !== '/parse/users/me') {
     if (req.header('X-Parse-Client-Key') !== config.clientKey) {
       return res.status(403).send({
         'error': 'unauthorized',
