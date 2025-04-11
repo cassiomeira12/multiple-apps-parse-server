@@ -83,7 +83,7 @@ try {
 }
 
 const projectPath = config.projectPath || __dirname;
-const webFolder = process.env.webAppFolder || '/public';
+const webFolder = config.webAppFolder || '/public';
 
 app.use('/public', express.static(resolve(projectPath + '/public')));
 
@@ -91,7 +91,7 @@ if (webFolder === '/public') {
   app.use(express.static(resolve(projectPath + '/public')));
 } else {
   app.use(express.static(resolve(projectPath + webFolder)));
-  app.use(webFolder, express.static(resolve(projectPath + webFolder)));
+  app.use(webAppPath, express.static(resolve(projectPath + webFolder)));
 }
 
 const webAppPath = config.webApp || '/';
