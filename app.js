@@ -87,16 +87,16 @@ const projectPath = config.projectPath || __dirname;
 app.use(express.static(resolve(projectPath + '/public')));
 app.use('/public', express.static(resolve(projectPath + '/public')));
 
-const webAppPath = config.webApp || "/";
+const webAppPath = config.webApp || '/';
 
-if (webAppPath !== "/") {
-  app.get("/", (_, res) => {
+if (webAppPath !== '/') {
+  app.get('/', (_, res) => {
     res.redirect(webAppPath);
   });
 }
 
 app.get(webAppPath, (_, res) => {
-  res.sendFile(resolve(projectPath + '/public/test.html'));
+  res.sendFile(resolve(projectPath + '/public/index.html'));
 });
 
 var allowedOrigins = config.allowed_origins_cors;
