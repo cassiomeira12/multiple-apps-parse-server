@@ -73,7 +73,7 @@ const parseServer = new ParseServer(configParse);
 
 var app;
 try {
-    app = require(config.cloud + '/app.js');
+    app = require(config.projectPath + '/cloud/app.js');
     app.enable('trust proxy');
     app.set('trust proxy', true);
 } catch (_) {
