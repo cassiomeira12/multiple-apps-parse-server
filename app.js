@@ -106,6 +106,14 @@ app.get(webAppPath, (_, res) => {
   res.sendFile(resolve(projectPath + webFolder + '/index.html'));
 });
 
+app.get('/privacy-policy', (_, res) => {
+  res.sendFile(resolve(projectPath + '/public/privacy_policy.html'));
+});
+
+app.get('/terms-conditions', (_, res) => {
+  res.sendFile(resolve(projectPath + '/public/terms_conditions.html'));
+});
+
 var allowedOrigins = config.allowed_origins_cors || [];
 
 if (allowedOrigins.length > 0) {
