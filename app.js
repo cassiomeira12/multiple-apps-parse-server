@@ -6,21 +6,21 @@ const { path, resolve } = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const config = process.env.app ? require("./configs/" + process.env.app) : require("./configs/sos-stg.json");
+const config = process.env.app ? require("./configs/" + process.env.app) : require("./configs/password-manager-prod.json");
 
 const parseMount = config.parseMount;
 const serverURL = config.serverURL + ":" + config.port;
 const graphQLServerURL = serverURL + "/graphql";
 
-var schemes;
-var defaultData;
+var schemesProjectApp;
+var defaultDataProjectApp;
 try {
-    const { schemesLocal, defaultDataLocal } = require(config.projectPath + '/cloud/schemes/schemes');
-    schemes = schemesLocal;
-    defaultData = defaultDataLocal;
+    const { schemes, defaultData } = require(config.projectPath + '/cloud/schemes/schemes.js');
+    schemesProjectApp = schemes;
+    defaultDataProjectApp = defaultData;
 } catch (_) {
-    schemes = [];
-    defaultData = [];
+    schemesProjectApp = [];
+    defaultDataProjectApp = [];
 }
 
 
@@ -55,7 +55,7 @@ var configParse = {
     "liveQueryServerURL": "ws://localhost:1337"
   },
   "schema": {
-    "definitions": schemes,
+    "definitions": schemesProjectApp,
     "lockSchemas": false,
     "strict": false,
     "recreateModifiedFields": false,
@@ -78,7 +78,7 @@ var configParse = {
   },
   "serverStartComplete": () => {
     console.log('Parse server started');
-    Parse.Cloud.startJob("createDefaultData", {"data": defaultData});
+    Parse.Cloud.startJob("createDefaultData", {"data": defaultDataProjectApp});
   }
 }
 
