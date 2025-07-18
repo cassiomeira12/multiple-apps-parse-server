@@ -12,6 +12,18 @@ const parseMount = config.parseMount;
 const serverURL = config.serverURL + ":" + config.port;
 const graphQLServerURL = serverURL + "/graphql";
 
+var schemes;
+var defaultData;
+try {
+    const { schemesLocal, defaultDataLocal } = require(config.projectPath + '/cloud/schemes/schemes');
+    schemes = schemesLocal;
+    defaultData = defaultDataLocal;
+} catch (_) {
+    schemes = [];
+    defaultData = [];
+}
+
+
 var configParse = {
   appName: config.appName,
   appId: config.appId,
@@ -42,13 +54,13 @@ var configParse = {
     "classNames": config.liveQueryClasses,
     "liveQueryServerURL": "ws://localhost:1337"
   },
-  // "schema": {
-  //   "definitions": schemes,
-  //   "lockSchemas": false,
-  //   "strict": false,
-  //   "recreateModifiedFields": false,
-  //   "deleteExtraFields": false,
-  // },
+  "schema": {
+    "definitions": schemes,
+    "lockSchemas": false,
+    "strict": false,
+    "recreateModifiedFields": false,
+    "deleteExtraFields": false,
+  },
   "accountLockout": null,
   "passwordPolicy": {
     "doNotAllowUsername": true,
@@ -66,6 +78,7 @@ var configParse = {
   },
   "serverStartComplete": () => {
     console.log('Parse server started');
+    Parse.Cloud.startJob("createDefaultData", {"data": defaultData});
   }
 }
 
