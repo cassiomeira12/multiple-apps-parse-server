@@ -46,7 +46,7 @@ var configParse = {
   "allowClientClassCreation": false,
   "allowExpiredAuthDataToken": false,
   "expireInactiveSessions": true,
-  "sessionLength": 3600 * 24 * 5, // Session expires in 5 days
+  "sessionLength": 3600 * 24 * 15, // Session expires in 15 days
   "jsonLogs": true,
   "logsFolder": "./logs/" + config.appName,
   "startLiveQueryServer": true,
@@ -63,8 +63,15 @@ var configParse = {
   },
   "accountLockout": null,
   "passwordPolicy": {
+    // "maxPasswordAge": null,
     "doNotAllowUsername": true,
     "maxPasswordHistory": null,
+    "validationError": 'password_must_contain_1_to_18_digits',
+    "validatorCallback": (password) => {
+      return password.length > 3 && password.length <= 18;
+    },
+    // enforce password with at least 8 char with at least 1 lower case, 1 upper case and 1 digit
+    // "validatorPattern": /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
   },
   "fileUpload": {
     "enableForPublic": false,
