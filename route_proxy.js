@@ -1,22 +1,23 @@
-var http = require('http');
-var httpProxy = require('http-proxy');
-var HttpProxyRules = require('http-proxy-rules');
+const httpProxy = require('http-proxy');
+const HttpProxyRules = require('http-proxy-rules');
+const express = require('express');
 
 const rules = require('./route-proxy.json');
 
-var proxyRules = new HttpProxyRules({ rules: rules });
+const app = express();
+const proxyRules = new HttpProxyRules({ rules: rules });
+const proxy = httpProxy.createProxy();
 
-var proxy = httpProxy.createProxy();
-
-const httpServer = http.createServer(function(req, res) {
+app.all('*', function(req, res) {
+    req.headers['ip'] = req.ip;
     var target = proxyRules.match(req);
     if (target) {
-        return proxy.web(req, res, { target: target });
+        return proxy.web(req, res, { target: target});
     }
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('404 not found');
 });
 
-httpServer.listen(2000, function () {
-    console.log("Route Proxy is running");
+app.listen(2000, function () {
+  console.log("Route Proxy is running");
 });
