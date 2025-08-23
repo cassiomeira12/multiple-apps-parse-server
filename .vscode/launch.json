@@ -2,8 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Multi Parse Server",
+      "name": "Multi Parse Server App",
       "command": "npm run dev",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "name": "Dashboard App",
+      "command": "nodemon dashboard.js",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+        {
+      "name": "Route Proxy App",
+      "command": "nodemon route_proxy.js",
       "request": "launch",
       "type": "node-terminal"
     }
