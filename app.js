@@ -102,31 +102,51 @@ const projectPath = config.projectPath || __dirname;
 const webAppPath = config.webApp || '/';
 const webFolder = config.webAppFolder || '/public';
 
-app.use('/public', express.static(resolve(projectPath + '/public')));
-
-if (webFolder === '/public') {
-  app.use(express.static(resolve(projectPath + '/public')));
-} else {
-  app.use(express.static(resolve(projectPath + webFolder)));
-  app.use(webAppPath, express.static(resolve(projectPath + webFolder)));
-}
-
 if (webAppPath !== '/') {
   app.get('/', (_, res) => {
     res.redirect(webAppPath);
   });
 }
 
-app.get(webAppPath, (_, res) => {
+app.get(webAppPath, (req, res) => {
   res.sendFile(resolve(projectPath + webFolder + '/index.html'));
+  Parse.Cloud.startJob(
+    "website-visit", {
+      "ip": req.headers['ip'] ?? req.ip,
+      "link": `${req.headers['host']}${req.originalUrl}`,
+      "userAgent": req.headers['user-agent'],
+    }
+  );
 });
 
-app.get('/privacy-policy', (_, res) => {
+app.use(express.static(resolve(projectPath + '/public')));
+app.use('/public', express.static(resolve(projectPath + '/public')));
+
+if (webFolder !== '/public') {
+  app.use(express.static(resolve(projectPath + webFolder)));
+  app.use(webAppPath, express.static(resolve(projectPath + webFolder)));
+}
+
+app.get('/privacy-policy', (req, res) => {
   res.sendFile(resolve(projectPath + '/public/privacy_policy.html'));
+  Parse.Cloud.startJob(
+    "website-visit", {
+      "ip": req.headers['ip'] ?? req.ip,
+      "link": `${req.headers['host']}${req.originalUrl}`,
+      "userAgent": req.headers['user-agent'],
+    }
+  );
 });
 
-app.get('/terms-conditions', (_, res) => {
+app.get('/terms-conditions', (req, res) => {
   res.sendFile(resolve(projectPath + '/public/terms_conditions.html'));
+  Parse.Cloud.startJob(
+    "website-visit", {
+      "ip": req.headers['ip'] ?? req.ip,
+      "link": `${req.headers['host']}${req.originalUrl}`,
+      "userAgent": req.headers['user-agent'],
+    }
+  );
 });
 
 var allowedOrigins = config.allowed_origins_cors || [];
