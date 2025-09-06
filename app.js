@@ -44,8 +44,8 @@ var configParse = {
   "enableAnonymousUsers": false,
   "allowClientClassCreation": false,
   "allowExpiredAuthDataToken": false,
-  "expireInactiveSessions": true,
-  "sessionLength": 3600 * 24 * 15, // Session expires in 15 days
+  // "expireInactiveSessions": true,
+  // "sessionLength": 3600 * 24 * 15, // Session expires in 15 days
   "jsonLogs": true,
   "logsFolder": "./logs/" + config.appName,
   "startLiveQueryServer": true,
