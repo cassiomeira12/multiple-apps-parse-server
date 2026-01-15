@@ -85,6 +85,7 @@ var configParse = {
   "serverStartComplete": () => {
     console.log('Parse server started');
     Parse.Cloud.startJob("createDefaultData", {"data": defaultDataProjectApp});
+    Parse.Cloud.startJob("defaultProjectJob");
   }
 }
 
