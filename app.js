@@ -1,3 +1,4 @@
+const Sentry = require("@sentry/node");
 const express = require('express');
 const { default: ParseServer, ParseGraphQLServer } = require('parse-server');
 const http = require('http');
@@ -225,3 +226,9 @@ server.listen(config.port, function () {
 });
 
 ParseServer.createLiveQueryServer(server);
+
+Sentry.init({
+  dsn: config.crashlyticsSentryDSN,
+  sendDefaultPii: true,
+  tracesSampleRate: 1.0,
+});

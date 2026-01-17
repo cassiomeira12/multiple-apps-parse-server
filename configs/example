@@ -5,6 +5,7 @@
   "restAPIKey": "123",
   "clientKey": "123",
   "databaseURI": "mongodb://localhost:27017/database",
+  "crashlyticsSentryDSN": "",
   "projectPath": "./",
   "publicServerURL": "http://localhost:1337/parse",
   "serverURL": "http://localhost",
