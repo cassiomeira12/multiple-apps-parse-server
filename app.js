@@ -1,9 +1,10 @@
 const Sentry = require("@sentry/node");
 const express = require('express');
 const { default: ParseServer, ParseGraphQLServer } = require('parse-server');
+const { path, resolve } = require('path');
 const http = require('http');
 const https = require('https');
-const { path, resolve } = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 
@@ -193,27 +194,25 @@ app.all('*', (req, res, next) => {
   next();
 });
 
-// Certificates and credentials for HTTPS server
-// var fs = require('fs')
-// var privateKey  = fs.readFileSync("../certificate/key.pem", "utf8")
-// var certificate = fs.readFileSync("../certificate/cert.pem", "utf8")
-// var ca = fs.readFileSync("../certificate/cert.pem", "utf8")
-
-// const credentials = {
-//   key: privateKey,
-//   cert: certificate,
-//   ca: ca
-// }
-
 app.use(parseMount, parseServer.app);
 
 const parseGraphQLServer = new ParseGraphQLServer(
-  parseServer, { graphQLPath: '/graphql' }
+  parseServer,
+  {
+    graphQLPath: '/graphql',
+  }
 );
 
 parseGraphQLServer.applyGraphQL(app);
 
-const server = http.createServer(app); // https.createServer(credentials, app);
+// Certificates and credentials for HTTPS server
+// const credentials = {
+//   key: fs.readFileSync('privkey.pem'),
+//   cert: fs.readFileSync('fullchain.pem'),
+// }
+// const server = https.createServer(credentials, app);
+
+const server = http.createServer(app);
 
 server.listen(config.port, function () {
   console.log(`Parse App ${config.appName}`);
