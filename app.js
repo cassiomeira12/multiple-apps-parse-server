@@ -1,5 +1,6 @@
 const Sentry = require("@sentry/node");
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const { default: ParseServer, ParseGraphQLServer } = require('parse-server');
 const { path, resolve } = require('path');
 const http = require('http');
@@ -95,9 +96,15 @@ const parseServer = new ParseServer(configParse);
 
 var app;
 try {
-    app = require(config.projectPath + '/cloud/app.js');
+  app = require(config.projectPath + '/cloud/app.js');
 } catch (_) {
-    app = express();
+  app = express();
+  const fileUploadConfig = fileUpload({
+    limits: { fileSize: 500 * 1024 * 1024 },
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+  });
+  app.use(fileUploadConfig);
 }
 
 const projectPath = config.projectPath || __dirname;
