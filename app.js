@@ -159,6 +159,77 @@ app.get('/terms-conditions', (req, res) => {
   );
 });
 
+app.post('/file', async function(req, res) {
+  if (!req.files || !req.files.file) {
+    return res.status(422).send('No files were uploaded');
+  }
+
+  const sessionToken = req.headers['x-parse-session-token'] ?? '';
+
+  const body = req.body;
+  const package = body.package;
+  const platform = body.platform;
+  const nameVersion = body.nameVersion;
+  const buildVersion = body.buildVersion;
+
+  const uploadedFile = req.files.file;
+  const fileName = uploadedFile.name;
+  const downloadUrl = `${configParse.publicServerURL}/public/releases/${nameVersion}/${fileName}`;
+
+  var savePathDir = `${projectPath}/public/releases/${nameVersion}/`;
+  if (!fs.existsSync(savePathDir)) {
+    fs.mkdirSync(savePathDir, { recursive: true });
+  }
+
+  if (fs.existsSync(savePathDir + fileName)) {
+    return res.status(500).send(`${fileName} already exist`);
+  }
+
+  const versionApp = new Parse.Object("VersionApp");
+  versionApp.set("package", package);
+  versionApp.set("platform", platform);
+  versionApp.set("nameVersion", nameVersion);
+  versionApp.set("buildVersion", parseInt(buildVersion));
+  versionApp.set("downloadUrl", downloadUrl);
+
+  var acl = new Parse.ACL();
+  acl.setPublicReadAccess(false);
+  acl.setPublicWriteAccess(false);
+  acl.setRoleReadAccess("Admin", true);
+  acl.setRoleWriteAccess("Admin", true);
+  
+  versionApp.setACL(acl);
+  
+  try {
+    const result = await versionApp.save(null, { sessionToken: sessionToken });
+    uploadedFile.mv(savePathDir + fileName, function(err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+    });
+
+    const queryVersionApp = new Parse.Query('VersionApp');
+    queryVersionApp.equalTo('platform', platform);
+    queryVersionApp.descending('buildVersion');
+
+    const latestVersionApp = await queryVersionApp.first({ useMasterKey: true });
+
+    const appStoreUrl = `app_${platform}_store_url`;
+
+    const configKeys = {};
+    const masterKeyOnly = {};
+
+    configKeys[appStoreUrl] = latestVersionApp.get('downloadUrl');
+    masterKeyOnly[appStoreUrl] = true;
+
+    Parse.Config.save(configKeys, masterKeyOnly);
+
+    return res.send(result.toJSON());
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
 var allowedOrigins = config.allowed_origins_cors || [];
 
 if (allowedOrigins.length > 0) {
