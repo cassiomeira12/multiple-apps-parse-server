@@ -176,12 +176,14 @@ app.post('/file', async function(req, res) {
   const fileName = uploadedFile.name;
   const downloadUrl = `${configParse.publicServerURL}/public/releases/${nameVersion}/${fileName}`;
 
-  var savePathDir = `${projectPath}/public/releases/${nameVersion}/`;
+  var savePathDir = `${projectPath}/public/releases/${nameVersion}`;
   if (!fs.existsSync(savePathDir)) {
     fs.mkdirSync(savePathDir, { recursive: true });
   }
 
-  if (fs.existsSync(savePathDir + fileName)) {
+  const filePath = `${savePathDir}/${fileName}`;
+
+  if (fs.existsSync(filePath)) {
     return res.status(500).send(`${fileName} already exist`);
   }
 
@@ -191,6 +193,7 @@ app.post('/file', async function(req, res) {
   versionApp.set("nameVersion", nameVersion);
   versionApp.set("buildVersion", parseInt(buildVersion));
   versionApp.set("downloadUrl", downloadUrl);
+  versionApp.set("filePath", filePath);
 
   var acl = new Parse.ACL();
   acl.setPublicReadAccess(false);
