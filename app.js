@@ -173,7 +173,7 @@ app.post('/file', async function(req, res) {
   const buildVersion = body.buildVersion;
 
   const uploadedFile = req.files.file;
-  const fileName = uploadedFile.name;
+  const fileName = uploadedFile.name.replace(new RegExp(' ', 'g'), '_');
   const downloadUrl = `${configParse.publicServerURL}/public/releases/${nameVersion}/${fileName}`;
 
   var savePathDir = `${projectPath}/public/releases/${nameVersion}`;
@@ -205,7 +205,7 @@ app.post('/file', async function(req, res) {
   
   try {
     const result = await versionApp.save(null, { sessionToken: sessionToken });
-    uploadedFile.mv(savePathDir + fileName, function(err) {
+    uploadedFile.mv(filePath, function(err) {
       if (err) {
         return res.status(500).send(err);
       }
